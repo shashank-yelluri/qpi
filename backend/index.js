@@ -88,6 +88,32 @@ app.get("/tasks", async (req, res) => {
   return res.status(200).json({ status: 200, body: tasks });
 });
 
+app.post("/tasks", async (req, res) => {
+  const { name, owner, status } = req.body;
+
+  const ownerDetails = await db.collection("users").findOne({ name: owner });
+
+  if (!ownerDetails) {
+    return res.status(404).json({
+      status: 404,
+      message: "No user with the name",
+    });
+  }
+
+  const { _id } = ownerDetails;
+
+  await db.collection("tasks").insertOne({
+    name,
+    status,
+    owner_id: _id.toString(),
+  });
+
+  return res.status(200).json({
+    status: 200,
+    message: "Successful",
+  });
+});
+
 app.post("/login", async (req, res) => {
   const { email = "", password = "" } = req.body;
 
@@ -191,6 +217,29 @@ app.post("/users", async (req, res) => {
   }
 
   await db.collection("users").insertOne({ name, email, password, isAdmin });
+
+  return res.status(200).json({
+    status: 200,
+    message: "Successful",
+  });
+});
+
+app.post("/bulkUsers", async (req, res) => {
+  const { users } = req.body;
+
+  let totalUsers = [];
+  for (let index = 0; index < users.length; index++) {
+    let obj = {
+      name: users[index].Name,
+      email: users[index].Email,
+      password: users[index].Password,
+      isAdmin: users[index].IsAdmin === "Yes" ? true : false,
+    };
+
+    totalUsers.push(obj);
+  }
+
+  await db.collection("users").insertMany(totalUsers);
 
   return res.status(200).json({
     status: 200,
