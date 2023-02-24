@@ -9,6 +9,10 @@ export const AddTask = ({ mutation, setIsModalOpen }) => {
     { value: "In Progress", label: "In Progress" },
     { value: "Complete", label: "Complete" },
   ];
+  const boardValues = [
+    { value: "Apps", label: "Apps" },
+    { value: "DevOps", label: "DevOps" },
+  ];
 
   const { isError, error, isLoading, data } = useQuery(["users"], getUsers);
 
@@ -21,6 +25,7 @@ export const AddTask = ({ mutation, setIsModalOpen }) => {
       name: values.name,
       status: values.status,
       owner: values.owner,
+      board: values.board,
     });
 
     setIsModalOpen(false);
@@ -45,6 +50,7 @@ export const AddTask = ({ mutation, setIsModalOpen }) => {
       <Form.Item label="Name" name="name">
         <Input />
       </Form.Item>
+
       <Form.Item label="Status" name="status">
         <Select>
           {statusValues.map(({ value, label }) => (
@@ -54,11 +60,22 @@ export const AddTask = ({ mutation, setIsModalOpen }) => {
           ))}
         </Select>
       </Form.Item>
+
       <Form.Item label="Owner" name="owner">
         <Select>
           {data.map(({ name }) => (
             <Select.Option value={name} key={name}>
               {name}
+            </Select.Option>
+          ))}
+        </Select>
+      </Form.Item>
+
+      <Form.Item label="Board" name="board">
+        <Select>
+          {boardValues.map(({ value, label }) => (
+            <Select.Option value={value} key={value}>
+              {label}
             </Select.Option>
           ))}
         </Select>
