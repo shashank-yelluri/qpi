@@ -72,7 +72,7 @@ app.get("/tasks", async (req, res) => {
   for (let index = 0; index < resp.length; index++) {
     const task = resp[index];
 
-    const { _id, name, status, owner_id } = task;
+    const { _id, name, status, owner_id, board = "" } = task;
     const owner = await db
       .collection("users")
       .findOne({ _id: new ObjectId(owner_id) });
@@ -82,6 +82,7 @@ app.get("/tasks", async (req, res) => {
       name,
       status,
       owner,
+      board,
     });
   }
 
@@ -89,7 +90,7 @@ app.get("/tasks", async (req, res) => {
 });
 
 app.post("/tasks", async (req, res) => {
-  const { name, owner, status } = req.body;
+  const { name, owner, status, board } = req.body;
 
   const ownerDetails = await db.collection("users").findOne({ name: owner });
 
@@ -106,6 +107,7 @@ app.post("/tasks", async (req, res) => {
     name,
     status,
     owner_id: _id.toString(),
+    board,
   });
 
   return res.status(200).json({
